@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,12 +16,17 @@ public class BankTransactionAnalyzer {
         List<String> lines = Files.readAllLines(path);
         final List<BankTransaction> bankTransactions = bankStatementParser.parseLinesFromCSV(lines);
         final BankStatementProcessor bankStatementProcessor = new BankStatementProcessor(bankTransactions);
-        double total = 0d;
-        for (final String line: lines) {
-            final String[] columns = line.split(",");
-            final double amount = Double.parseDouble(columns[1]);
-            total+=amount;
-        }
-        System.out.println("The total for all transactions is " + total);
+        collectSummary(bankStatementProcessor);
+    }
+
+    private static void collectSummary(final BankStatementProcessor bankStatementProcessor) {
+        System.out.println("The total for all transactions is "
+                + bankStatementProcessor.calculateTotalAmount());
+        System.out.println("The total for transactions in January is "
+                + bankStatementProcessor.calculateTotalInMonth(Month.JANUARY));
+        System.out.println("The total for transactions in February is "
+                + bankStatementProcessor.calculateTotalInMonth(Month.FEBRUARY));
+        System.out.println("The total salary received is "
+                + bankStatementProcessor.calculateTotalForCategory("Salary"));
     }
 }
